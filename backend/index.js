@@ -16,6 +16,7 @@ const express=require("express");
 const { v4: uuid } = require('uuid');
 
 const Document = require("./Schemas/Document")
+const Peer = require('./Schemas/peerinfos')
 
 const PORT = process.env.PORT || 9000;
 
@@ -82,6 +83,68 @@ const io = socket(server,{cors: {
 const defaultValue = ""
 
 io.on('connection',(socket)=>{
+    // VC socket events
+
+    socket.on('audio-toggle-sender', (userId, astatus) => {
+		Peer.updateOne({peerid: userId}, {
+			audioStatus: astatus, 
+		}, function(err, numberAffected, rawResponse) {
+		   //handle it
+		})
+		socket.broadcast.to(roomId).emit('audio-toggle-receiver', {userId: userId, audioStatus: astatus})
+	})
+
+	socket.on('video-toggle-sender', (userId, vstatus) => {
+		Peer.updateOne({peerid: userId}, {
+			videoStatus: vstatus, 
+		}, function(err, numberAffected, rawResponse) {
+		   //handle it
+		})
+		socket.broadcast.to(roomId).emit('video-toggle-receiver', {userId: userId, videoStatus: vstatus})
+	})
+
+	socket.on('peer-track-sender', ()=>{
+
+		Peer.find({roomid: roomId}, {'_id': 0, 'username': 1, 'peerid': 1, 'audioStatus': 1, 'videoStatus': 1})
+		.then((mediaRes)=>{
+			
+			let res = mediaRes.map((x)=>x.peerid)
+			// console.log('peerTrack'+res) 
+			// console.log('medias'+mediaRes)
+			socket.broadcast.to(roomId).emit('peer-track-receiver', res, mediaRes)     
+		})
+	})
+
+	socket.on('join-room', (uname, room_id, userId, astatus, vstatus) => {
+		roomId = room_id
+		socket.join(roomId)
+		socket.broadcast.to(roomId).emit('user-connected', userId)
+		// peers.push(userId)
+		// console.log('username:;'+ uname)
+		const peer = new Peer({
+			username: uname,
+			roomid: roomId,
+			peerid: userId,
+			audioStatus: astatus,
+			videoStatus: vstatus
+		})
+		peer.save()
+		.then((res)=>console.log(res))
+		.catch(err=>console.log(err))
+		
+		socket.on('disconnect', () => {
+
+		// console.log("socket disc")
+		// console.log(userId)
+		socket.broadcast.to(roomId).emit('user-disconnected', userId)
+		Peer.deleteOne({peerid: userId}, function (err) {
+			if (err) return handleError(err);
+		})
+		// peers.splice( peers.indexOf(userId), 1)
+		
+		})
+	})
+    // Chat socket events
     socket.on('createRoom',async(arg,redirect)=>{
         let roomId=uuid();
         socket.join(`${roomId}`);

@@ -6,11 +6,11 @@ import "quill/dist/quill.snow.css"
 import Chat from './Modules/Chat/Chat/Chat';
 import './styles.css';
 import './Meet.css';
+import VC from './Modules/VideoCall/vc-component'
 import Participant from './Modules/Participants/Participant';
 import Container from './Modules/Whiteboard/container/Container';
 import TextEditor from './Modules/DocEditor/TextEditor';
 import logo from '../../Images/logo.jpg';
-import video from '../../Images/video.png';
 import chat from '../../Images/chat.png';
 import user from '../../Images/user.png';
 import videoOn from '../../Images/videoOn.png';
@@ -18,6 +18,9 @@ import videoOff from '../../Images/videoOff.png';
 import mute from '../../Images/mute.png';
 import unmute from '../../Images/unmute.png';
 import endCall from '../../Images/endCall.png';
+import PeerInit from './Modules/VideoCall/peer-init'
+import {toggleAudio, toggleVideo} from './Modules/VideoCall/vc'
+
 let socket;
 
 const SAVE_INTERVAL_MS = 2000
@@ -36,7 +39,7 @@ const TOOLBAR_OPTIONS = [
 const Meet = (props) => {
     const { id: roomID } = useParams()
     const [page,setpage] = useState(0);
-    const [com,setCom] = useState(0);
+    const [com,setCom] = useState(1);
     const [name,setName] = useState('');
     const [room,setRoom] = useState('');
     const [messages,setMessages] = useState([]);
@@ -49,6 +52,7 @@ const Meet = (props) => {
     const [camon,setcamon] = useState(true);
     const [micon,setmicon] = useState(true);
     const [roomName,setRoomName] = useState();
+    const [myPeer] = useState(PeerInit())
     const ENDPOINT = 'http://localhost:9000';
     useEffect(()=>{
         var connectionOptions =  {
@@ -61,8 +65,12 @@ const Meet = (props) => {
         let name = props.user.login;
         setName(name)
         setRoom(roomID);
+
         // console.log(roomID);
         let user = props.user;
+        // Calling VC
+        // const myPeer = PeerInit()
+        //setMyPeer(myPeer)
         socket.emit('join',{roomID,user},(roomName)=>{
             setRoomName(roomName);
         });        
@@ -172,25 +180,27 @@ const Meet = (props) => {
                 <img src={logo} alt='logo' width='70' height='66'/> 
                 <h1>{roomName}</h1>
             </div>
-            <div className='useroptions-container resizeable'></div>
+            <div className='video-container resizeable'>
+                <VC roomid ={roomID} uname={props.user.login} mypeer = {myPeer}/>
+            </div>
             <div className='communication-container resizeable'>
                 <div className="com-navbar">
-                    <button onClick={()=>setCom(0)}><img src={video} alt='video' width='40' height='40' /></button>
                     <button onClick={()=>setCom(1)}><img src={chat} alt='chat' width='40' height='40' /></button>
                     <button onClick={()=>setCom(2)}><img src={user} alt='user' width='40' height='40' /></button>
                 </div>
                 <div className="com-overview">
                     {
-                        com === 0?(
-                            <div className='VideoArea'></div>
-                        ):
+
                         ( 
                             com===1?
-                            <div className="ChatArea"><Chat id={props.user._id} messages={messages} message={message} setMessage={setMessage} sendMessage={sendMessage}/></div>
-                            :<div className="ParticipantsArea"><Participant users={usersInRoom}/></div>
+                            <div className="ChatArea" id='ChatArea'><Chat id={props.user._id} messages={messages} message={message} setMessage={setMessage} sendMessage={sendMessage}/></div>
+                            :<div className="ParticipantsArea" id='PartArea'><Participant users={usersInRoom}/></div>
                         )
                     }
                 </div>
+            </div>
+            <div className='user-options-container resizeable'>
+
             </div>
             <div className='workspace-container resizeable'>
                 <div className="work-choice-bar">
@@ -218,9 +228,11 @@ const Meet = (props) => {
             </div> 
             
             <div className='com-features-container resizeable'>
-                <button onClick={()=>setmicon(!micon)}>{micon?<img src={unmute} alt='video' width='40' height='40' />:<img src={mute} alt='video' width='40' height='40' />}</button>
+                <button onClick={()=>{setmicon(!micon) 
+                    toggleAudio(myPeer)}}>{micon?<img src={unmute} alt='video' width='40' height='40' />:<img src={mute} alt='video' width='40' height='40' />}</button>
                 <button onClick={leaveMeet}><img src={endCall} alt='video' width='40' height='40' /></button>
-                <button onClick={()=>setcamon(!camon)}>{camon?<img src={videoOn} alt='video' width='40' height='40' />:<img src={videoOff} alt='video' width='40' height='40' />}</button>
+                <button onClick={()=>{setcamon(!camon) 
+                    toggleVideo(myPeer)}}>{camon?<img src={videoOn} alt='video' width='40' height='40' />:<img src={videoOff} alt='video' width='40' height='40' />}</button>
             </div>
         </div>
     );

@@ -12,9 +12,15 @@
     margin-left: 10px;
     color:white;
 }
-.useroptions-container{
+.video-container{
     grid-column: span 3;
+    grid-row: span 2;
     background-color: #363434;
+
+}
+.user-options-container{
+    background-color: #363434;
+
 }
 .communication-container{   
     grid-row: span 9;
@@ -46,7 +52,7 @@
 .com-navbar{
     background-color: white;
     display: grid;
-    grid-template-columns: repeat(3,minmax(33%,auto));
+    grid-template-columns: repeat(2,minmax(50%, 50%));
 }
 .com-navbar button{
     background-color: #363434;
@@ -102,10 +108,86 @@
     max-height: 700px;
 }
 
+/* VC CSS */
 
-.VideoArea{
-    background-color: #363434;
+.mediaOptions  {
+	position: relative;
+	/* top: 70%; */
+	bottom: 0%;
+	left: 50%;
+	align-items: center;
 }
+
+.userInfo
+{
+	position: absolute;
+	background: rgb(2,0,36);
+	background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 100%);
+	height: 25%;
+	width: 100%;
+	bottom: 0%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.mediaBox
+{
+	position: relative;
+	width: 23%;
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}	
+
+.userName
+{
+	position: relative;
+	color: white;
+	left: 5%;
+	bottom: 5%;
+}
+
+.user
+{
+	align-items: center;
+	position: relative;
+}
+
+.audioStatus	
+{
+	position: relative;
+
+}
+
+.videoStatus
+{
+	position: relative;
+	right: 5%;
+}
+
+#video-grid {
+	margin:4px, 4px;
+	padding:4px;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	position: absolute;
+	right:0%;
+	display: grid;
+	grid-template-rows: repeat(auto-fill, 170px);
+	grid-auto-columns: 300px;
+	grid-row-gap: 10px;
+}
+
+video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+/* .VideoArea{
+    background-color: #363434;
+
+} */
 .ChatArea{
     background-color: #363434;
 }

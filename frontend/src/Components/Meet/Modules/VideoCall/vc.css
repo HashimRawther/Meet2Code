@@ -1,0 +1,76 @@
+
+.mediaOptions  {
+	position: relative;
+	/* top: 70%; */
+	bottom: 0%;
+	left: 50%;
+	align-items: center;
+}
+
+.userInfo
+{
+	position: absolute;
+	background: rgb(2,0,36);
+	background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 100%);
+	border-radius: 10px;
+	width: 100%;
+	bottom: 20%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.mediaBox
+{
+	position: relative;
+	width: 28%;
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}	
+
+.user-name
+{
+	position: relative;
+	color: white;
+	left: 5%;
+    top: 15%
+}
+
+.user
+{
+	align-items: center;
+	position: relative;
+}
+
+.audioStatus	
+{
+	position: relative;
+
+}
+
+.videoStatus
+{
+	position: relative;
+	right: 5%;
+}
+
+#video-grid {
+	margin:4px, 4px;
+	padding:4px;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: hidden;
+	position: relative;
+	/* right:0%; */
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 250px);
+	grid-auto-rows: 180px;
+	grid-column-gap: 10px;
+}
+
+video {
+	width: 100%;
+	height: 80%;
+	border-radius: 10px;
+	object-fit: cover;
+}
